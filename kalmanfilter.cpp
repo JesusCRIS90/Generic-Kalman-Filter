@@ -285,7 +285,6 @@ void KalmanFilter::SetConfiguration(KalmanParameters new_params)
 
 KalmanParameters KalmanFilter::Configuration()
 {
-    // REVISAR ESTA PARTE
     KalmanParameters datos2send(params);
     return datos2send;
 }
