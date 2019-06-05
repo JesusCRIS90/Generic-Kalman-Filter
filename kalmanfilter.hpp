@@ -14,7 +14,7 @@ typedef arma::vec BasicVector;
 class KalmanVerify{
 
 public:
-    static void Verify(BasicMatrix&, arma::uword);
+    static void Verify(BasicMatrix&, arma::uword, arma::uword);
     static void Verify(BasicVector&, arma::uword);
 private:
     KalmanVerify();
@@ -25,7 +25,9 @@ private:
 class KalmanParameters
 {
 public:
-    KalmanParameters(BasicVector, BasicMatrix, BasicMatrix, BasicVector = {});
+    KalmanParameters(BasicVector, BasicVector, BasicMatrix, BasicMatrix, BasicVector = {}, BasicMatrix = {});
+    KalmanParameters(BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix,
+                     BasicVector, BasicVector, BasicMatrix = {}, BasicMatrix = {}, BasicVector = {});
     KalmanParameters(KalmanParameters& ptr);
     KalmanParameters(KalmanParameters* ptr);
     KalmanParameters(KalmanParameters&& ptr);
@@ -69,8 +71,9 @@ private:
     BasicVector Yk_estimada = {};                // It is the INPUT
 
 
-    arma::uword N = 0;             // Size of Vectors and Matrix. Most important parameter
-
+    arma::uword Nx = 0;             // Size of Vectors and Matrix. Most important parameter
+    arma::uword Nz = 0;
+    arma::uword Nu = 0;
 };
 
 
@@ -78,12 +81,21 @@ class KalmanFilter
 {
 public:
     //KalmanFilter();
-    KalmanFilter(BasicVector, BasicMatrix Q, BasicMatrix R, BasicVector = {});
+    KalmanFilter(BasicVector, BasicVector, BasicMatrix, BasicMatrix, BasicVector = {}, BasicMatrix = {});
+    KalmanFilter(BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix,
+                 BasicVector, BasicVector, BasicMatrix = {}, BasicMatrix = {}, BasicVector = {});
+
     KalmanFilter(KalmanParameters);
     ~KalmanFilter();
-    void Init(BasicVector input, BasicMatrix Q, BasicMatrix R, BasicVector = {});
 
-    BasicVector update(BasicVector input);      // Most Important function. Calling each iteration.
+    void Init(BasicVector, BasicVector, BasicMatrix, BasicMatrix, BasicVector = {}, BasicMatrix = {});
+    void Init(BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix, BasicMatrix,
+              BasicVector, BasicVector, BasicMatrix = {}, BasicMatrix = {}, BasicVector = {});
+
+    void update(BasicVector input, BasicVector = {} );      // Most Important function. Calling each iteration.
+
+    BasicVector GetState(){ return params->Xk_k_corregido;}
+    BasicVector GetMeasure(){ return params->Yk_estimada;}
 
     void SetConfiguration(KalmanParameters);
     KalmanParameters Configuration();
